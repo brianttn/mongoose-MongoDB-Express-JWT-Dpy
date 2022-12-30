@@ -1,4 +1,6 @@
 /* ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~     src/app.js     ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ */
+const dotenv = require('dotenv').config()       // Include 環境變數package
+
 /* = = = = = include 「module：mongoose」 & 連線到MongoDB的「database：demo」 = = = = = */
 const mongoose = require('./db/mongooseConnectMongoDB')
 
