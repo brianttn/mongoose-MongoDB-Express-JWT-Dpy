@@ -47,6 +47,41 @@ const userRouteAPI = (app, cors) => {
             }
         }
     )
+
+    /* = = = = = = 「使用者：登入」 => 「Method：POST」、「Route：/login」 = = = = = = */
+    app.post(
+        "/login",
+        async (req, res, next) => {
+            try {
+                const { account, password } = req.body;
+
+                /* - - - 驗證：「帳號、密碼」是否正確 - - - */
+                const currUser = await userConstructor.findByCredentials(account, password);
+
+                /* - - - 產生：該使用者「專屬的token」 - - - */
+                const token = await currUser.generateAuthToken();
+
+                /* - - - 回傳：「使用者資料、專屬token」 - - - */
+                res.send({ currUser, token });
+            } catch (err) {
+                next(err);
+            }
+        }
+    );
+
+    /* - - - 「取得：使用者列表」 => 「Method：GET」、「Route：/user/list」 - - - */
+    app.get(
+        "/user/list",
+        (req, res) => {
+            userConstructor.find(
+                {},
+                (err, doc) => {
+                    if (err) res.status(404).send(err);
+                    res.send(doc);
+                }
+            );
+        }
+    );
 }
 
 module.exports = userRouteAPI
