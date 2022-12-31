@@ -130,6 +130,40 @@ const userRouteAPI = (app, cors) => {
             }
         }
     );
+
+    /* = = = = = =  「刪除：使用者」 => 「Method：DELETE」、「Route：/user」  = = = = = = */
+    app.delete(
+        "/user",
+        (req, res) => {
+            // 使用Destructuring Assignment：將「物件：req.query」的「屬性物件：{account}」取出
+            const { account } = req.query;
+
+            /* - - - - - - 「尋找：該使用者」並將其刪除 - - - - - - */
+            userConstructor.deleteOne(
+                { account },        // 屬性物件：{account}
+                (err, doc) => {
+                    if (err) res.status(404).send(err);
+
+                    /* - - - 找不到：該使用者 - - - */
+                    if (!doc.deletedCount) {
+                        res.status(404).send(
+                            {
+                                success: false,
+                                message: `使用者：${account} => 不存在!!`
+                            }
+                        );
+                    } else {
+                        res.send(
+                            {
+                                success: true,
+                                message: `使用者：${account} => 已被刪除！!`
+                            }
+                        );
+                    }
+                }
+            );
+        }
+    );
 }
 
 module.exports = userRouteAPI
