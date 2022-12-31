@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 /* = = = = =   使用「mongoose：Schema」建立 => userSchema   = = = = =
 1. 映射(Map)到MongoDB的「collection：User」
@@ -66,6 +67,26 @@ userSchema.methods.generateAuthToken = async function () {
     );
 
     return token;       // 回傳 token
+}
+
+/* - - - 新增：User Schema 「Statics」 Method：findByCredentials() - - - */
+// 驗證：使用者是否存在
+userSchema.statics.findByCredentials = async (account, password) => {
+    /* - - - 依據「屬性物件：{account}」尋找「符合：該使用者」的document - - - */
+    const foundUser = await userConstructor.findOne({ account });
+
+    /* --- 丟出「Error Key(Type)：WRONG_ACCOUNT」讓Express Error Catch Middleware進行捕捉 --- */
+    if (!foundUser)
+        throw new Error("WRONG_ACCOUNT");
+
+    /* - - - 比對：「使用者輸入、資料庫存放」的「password」資料「是否：相同」 - - - */
+    const isMatched = await bcrypt.compare(password, foundUser.password);
+
+    /* --- 丟出「Error Key(Type)：WRONG_PASSWORD」讓Express Error Catch Middleware進行捕捉 --- */
+    if (!isMatched)
+        throw new Error("WRONG_PASSWORD");
+
+    return foundUser;       // 驗證無誤 => 回傳：該使用者完整資料
 }
 
 /* = = = = =   使用「mongoose：model()」建立 => userConstructor   = = = = =
