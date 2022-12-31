@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 /* = = = = =   使用「mongoose：Schema」建立 => userSchema   = = = = =
 1. 映射(Map)到MongoDB的「collection：User」
@@ -49,6 +50,23 @@ userSchema.method(
 
 /* - - - 新增：User Schema 「Instance」 Method：getAuthority() - - - */
 userSchema.methods.getAuthority = function () { return this.authority }
+
+/* - - - 新增：User Schema 「Instance」 Method：generateAuthToken() - - - */
+// 產生：token
+userSchema.methods.generateAuthToken = async function () {
+    const currUser = this;      // this：「當前使用者」Instance
+
+    /* - - - 使用「payload、secretKey」來產生「效期：24小時」的token - - - */
+    const secretKey = process.env.JWT_SECRETKEY
+    const payload = { account: this.account, _id: currUser._id.toString() };
+    const token = jwt.sign(
+        payload,
+        secretKey,
+        { expiresIn: '24h' }
+    );
+
+    return token;       // 回傳 token
+}
 
 /* = = = = =   使用「mongoose：model()」建立 => userConstructor   = = = = =
 1. mongoose.model()協同「collectionSchema的copy」建立 => MongoDB的「document Constructor物件」
