@@ -82,6 +82,54 @@ const userRouteAPI = (app, cors) => {
             );
         }
     );
+
+    /* = = = = = = 「更新：使用者資料」 => 「Method：PUT」、「Route：/user」 = = = = = = */
+    app.put(
+        "/user",
+        (req, res) => {
+            // Destructuring Assignment(解構賦值)：將「物件：req.query」的「屬性：account」的「值」取出
+            const { account } = req.query
+            const filterDoc = req.query;    // filter document：指定「搜尋條件」
+            const update = req.body;        // 用來：進行更新(修改)的內容
+
+            /* - - - 確認「帳號名稱」不會被修改 => 「屬性：account」「不可」在「修改內容內」 - - - */
+            if ("account" in req.body) {
+                res.status(403).send(
+                    {
+                        success: false,
+                        message: "無法修改帳號名稱!!"
+                    }
+                );
+            } else {
+                /* - - - - - - 「尋找：該使用者」並修改其資料 - - - - - - */
+                userConstructor.updateOne(
+                    filterDoc,
+                    update,
+                    (err, doc) => {
+                        if (err)
+                            res.status(404).send(err);
+
+                        /* - - - 找不到：該使用者 - - - */
+                        if (!doc.matchedCount) {
+                            res.status(404).send(
+                                {
+                                    success: false,
+                                    message: `使用者：${account} => 不存在!!`
+                                }
+                            );
+                        } else {
+                            res.send(
+                                {
+                                    success: true,
+                                    message: `使用者：${account} => 資料修改成功!!`
+                                }
+                            );
+                        }
+                    }
+                );
+            }
+        }
+    );
 }
 
 module.exports = userRouteAPI
