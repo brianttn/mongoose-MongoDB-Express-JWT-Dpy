@@ -1,4 +1,4 @@
-* ~ ~ ~ ~ ~ ~ ~ ~ ~   src/db/mongooseConnectMongoDB.js   ~ ~ ~ ~ ~ ~ ~ ~ ~ */
+/* ~ ~ ~ ~ ~ ~ ~ ~ ~   src/db/mongooseConnectMongoDB.js   ~ ~ ~ ~ ~ ~ ~ ~ ~ */
 const mongoose = require('mongoose')
 
 /* = = = = = = = =   連線到Railway上的MongoDB：無法設定「預設Database」   = = = = = = = = */
